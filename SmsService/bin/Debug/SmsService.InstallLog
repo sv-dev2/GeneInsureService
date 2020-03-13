@@ -1,0 +1,90 @@
+﻿Uninstalling assembly 'F:\ANKIT DHIMAN\GensureService\SmsService\SmsService\bin\Debug\SmsService.exe'.
+Affected parameters are:
+   logtoconsole = 
+   logfile = F:\ANKIT DHIMAN\GensureService\SmsService\SmsService\bin\Debug\SmsService.InstallLog
+   assemblypath = F:\ANKIT DHIMAN\GensureService\SmsService\SmsService\bin\Debug\SmsService.exe
+Removing EventLog source SmsService.
+Service SmsService is being removed from the system...
+Service SmsService was successfully removed from the system.
+Installing assembly 'F:\ANKIT DHIMAN\GensureService\SmsService\SmsService\bin\Debug\SmsService.exe'.
+Affected parameters are:
+   logtoconsole = 
+   logfile = F:\ANKIT DHIMAN\GensureService\SmsService\SmsService\bin\Debug\SmsService.InstallLog
+   assemblypath = F:\ANKIT DHIMAN\GensureService\SmsService\SmsService\bin\Debug\SmsService.exe
+Installing service SmsService...
+Service SmsService has been successfully installed.
+Creating EventLog source SmsService in log Application...
+Committing assembly 'F:\ANKIT DHIMAN\GensureService\SmsService\SmsService\bin\Debug\SmsService.exe'.
+Affected parameters are:
+   logtoconsole = 
+   logfile = F:\ANKIT DHIMAN\GensureService\SmsService\SmsService\bin\Debug\SmsService.InstallLog
+   assemblypath = F:\ANKIT DHIMAN\GensureService\SmsService\SmsService\bin\Debug\SmsService.exe
+Uninstalling assembly 'F:\ANKIT DHIMAN\GensureService\SmsService\SmsService\bin\Debug\SmsService.exe'.
+Affected parameters are:
+   logtoconsole = 
+   logfile = F:\ANKIT DHIMAN\GensureService\SmsService\SmsService\bin\Debug\SmsService.InstallLog
+   assemblypath = F:\ANKIT DHIMAN\GensureService\SmsService\SmsService\bin\Debug\SmsService.exe
+Removing EventLog source SmsService.
+Service SmsService is being removed from the system...
+Service SmsService was successfully removed from the system.
+Installing assembly 'F:\ANKIT DHIMAN\GensureService\SmsService\SmsService\bin\Debug\SmsService.exe'.
+Affected parameters are:
+   logtoconsole = 
+   logfile = F:\ANKIT DHIMAN\GensureService\SmsService\SmsService\bin\Debug\SmsService.InstallLog
+   assemblypath = F:\ANKIT DHIMAN\GensureService\SmsService\SmsService\bin\Debug\SmsService.exe
+Installing service SmsService...
+Service SmsService has been successfully installed.
+Creating EventLog source SmsService in log Application...
+Committing assembly 'F:\ANKIT DHIMAN\GensureService\SmsService\SmsService\bin\Debug\SmsService.exe'.
+Affected parameters are:
+   logtoconsole = 
+   logfile = F:\ANKIT DHIMAN\GensureService\SmsService\SmsService\bin\Debug\SmsService.InstallLog
+   assemblypath = F:\ANKIT DHIMAN\GensureService\SmsService\SmsService\bin\Debug\SmsService.exe
+Uninstalling assembly 'F:\ANKIT DHIMAN\GensureService\SmsService\SmsService\bin\Debug\SmsService.exe'.
+Affected parameters are:
+   logtoconsole = 
+   logfile = F:\ANKIT DHIMAN\GensureService\SmsService\SmsService\bin\Debug\SmsService.InstallLog
+   assemblypath = F:\ANKIT DHIMAN\GensureService\SmsService\SmsService\bin\Debug\SmsService.exe
+Removing EventLog source SmsService.
+Service SmsService is being removed from the system...
+Service SmsService was successfully removed from the system.
+Attempt to stop service SmsService.
+Installing assembly 'F:\ANKIT DHIMAN\GensureService\SmsService\SmsService\bin\Debug\SmsService.exe'.
+Affected parameters are:
+   logtoconsole = 
+   logfile = F:\ANKIT DHIMAN\GensureService\SmsService\SmsService\bin\Debug\SmsService.InstallLog
+   assemblypath = F:\ANKIT DHIMAN\GensureService\SmsService\SmsService\bin\Debug\SmsService.exe
+Installing service SmsService...
+Service SmsService has been successfully installed.
+Creating EventLog source SmsService in log Application...
+Committing assembly 'F:\ANKIT DHIMAN\GensureService\SmsService\SmsService\bin\Debug\SmsService.exe'.
+Affected parameters are:
+   logtoconsole = 
+   logfile = F:\ANKIT DHIMAN\GensureService\SmsService\SmsService\bin\Debug\SmsService.InstallLog
+   assemblypath = F:\ANKIT DHIMAN\GensureService\SmsService\SmsService\bin\Debug\SmsService.exe
+Installing assembly 'F:\ANKIT DHIMAN\GensureService\SmsService\SmsService\bin\Debug\SmsService.exe'.
+Affected parameters are:
+   logtoconsole = 
+   logfile = F:\ANKIT DHIMAN\GensureService\SmsService\SmsService\bin\Debug\SmsService.InstallLog
+   assemblypath = F:\ANKIT DHIMAN\GensureService\SmsService\SmsService\bin\Debug\SmsService.exe
+Installing service SmsService...
+Creating EventLog source SmsService in log Application...
+Rolling back assembly 'F:\ANKIT DHIMAN\GensureService\SmsService\SmsService\bin\Debug\SmsService.exe'.
+Affected parameters are:
+   logtoconsole = 
+   logfile = F:\ANKIT DHIMAN\GensureService\SmsService\SmsService\bin\Debug\SmsService.InstallLog
+   assemblypath = F:\ANKIT DHIMAN\GensureService\SmsService\SmsService\bin\Debug\SmsService.exe
+Restoring event log to previous state for source SmsService.
+Installing assembly 'E:\SmaService\SmsService\SmsService\bin\Debug\SmsService.exe'.
+Affected parameters are:
+   logtoconsole = 
+   logfile = E:\SmaService\SmsService\SmsService\bin\Debug\SmsService.InstallLog
+   assemblypath = E:\SmaService\SmsService\SmsService\bin\Debug\SmsService.exe
+Installing service SmsService...
+Service SmsService has been successfully installed.
+Creating EventLog source SmsService in log Application...
+Committing assembly 'E:\SmaService\SmsService\SmsService\bin\Debug\SmsService.exe'.
+Affected parameters are:
+   logtoconsole = 
+   logfile = E:\SmaService\SmsService\SmsService\bin\Debug\SmsService.InstallLog
+   assemblypath = E:\SmaService\SmsService\SmsService\bin\Debug\SmsService.exe

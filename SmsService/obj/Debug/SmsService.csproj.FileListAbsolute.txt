@@ -1,0 +1,30 @@
+F:\ANKIT DHIMAN\GensureService\SmsService\SmsService\obj\Debug\SmsService.ProjectInstaller.resources
+F:\ANKIT DHIMAN\GensureService\SmsService\SmsService\obj\Debug\SmsService.csproj.GenerateResource.Cache
+F:\ANKIT DHIMAN\GensureService\SmsService\SmsService\bin\Debug\SmsService.exe.config
+F:\ANKIT DHIMAN\GensureService\SmsService\SmsService\bin\Debug\SmsService.exe
+F:\ANKIT DHIMAN\GensureService\SmsService\SmsService\bin\Debug\SmsService.pdb
+F:\ANKIT DHIMAN\GensureService\SmsService\SmsService\obj\Debug\SmsService.exe
+F:\ANKIT DHIMAN\GensureService\SmsService\SmsService\obj\Debug\SmsService.pdb
+F:\ANKIT DHIMAN\GensureService\SmsService\SmsService\obj\Debug\SmsService.csprojResolveAssemblyReference.cache
+E:\SmaService\SmsService\SmsService\bin\Debug\SmsService.exe.config
+E:\SmaService\SmsService\SmsService\bin\Debug\SmsService.exe
+E:\SmaService\SmsService\SmsService\bin\Debug\SmsService.pdb
+E:\SmaService\SmsService\SmsService\obj\Debug\SmsService.ProjectInstaller.resources
+E:\SmaService\SmsService\SmsService\obj\Debug\SmsService.csproj.GenerateResource.Cache
+E:\SmaService\SmsService\SmsService\obj\Debug\SmsService.exe
+E:\SmaService\SmsService\SmsService\obj\Debug\SmsService.pdb
+F:\ANKIT DHIMAN\GensureService\Latest_SmsService_9_jan\SmsService\SmsService\bin\Debug\SmsService.exe.config
+F:\ANKIT DHIMAN\GensureService\Latest_SmsService_9_jan\SmsService\SmsService\obj\Debug\SmsService.exe
+F:\ANKIT DHIMAN\GensureService\Latest_SmsService_9_jan\SmsService\SmsService\obj\Debug\SmsService.pdb
+F:\ANKIT DHIMAN\GensureService\Latest_SmsService_9_jan\SmsService\SmsService\bin\Debug\SmsService.exe
+F:\ANKIT DHIMAN\GensureService\Latest_SmsService_9_jan\SmsService\SmsService\bin\Debug\SmsService.pdb
+F:\ANKIT DHIMAN\GensureService\Latest_SmsService_9_jan\SmsService\SmsService\obj\Debug\SmsService.ProjectInstaller.resources
+F:\ANKIT DHIMAN\GensureService\Latest_SmsService_9_jan\SmsService\SmsService\obj\Debug\SmsService.csproj.GenerateResource.Cache
+F:\ANKIT DHIMAN\GensureService\Latest_SmsService_9_jan\SmsService\SmsService\obj\Debug\SmsService.csprojResolveAssemblyReference.cache
+F:\ANKIT DHIMAN\GeneInsure_13_mar\GeneInsure_service_13_mar\SmsService\bin\Debug\SmsService.exe.config
+F:\ANKIT DHIMAN\GeneInsure_13_mar\GeneInsure_service_13_mar\SmsService\obj\Debug\SmsService.exe
+F:\ANKIT DHIMAN\GeneInsure_13_mar\GeneInsure_service_13_mar\SmsService\obj\Debug\SmsService.pdb
+F:\ANKIT DHIMAN\GeneInsure_13_mar\GeneInsure_service_13_mar\SmsService\bin\Debug\SmsService.exe
+F:\ANKIT DHIMAN\GeneInsure_13_mar\GeneInsure_service_13_mar\SmsService\bin\Debug\SmsService.pdb
+F:\ANKIT DHIMAN\GeneInsure_13_mar\GeneInsure_service_13_mar\SmsService\obj\Debug\SmsService.ProjectInstaller.resources
+F:\ANKIT DHIMAN\GeneInsure_13_mar\GeneInsure_service_13_mar\SmsService\obj\Debug\SmsService.csproj.GenerateResource.Cache
