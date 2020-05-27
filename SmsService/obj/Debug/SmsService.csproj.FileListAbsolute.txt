@@ -28,3 +28,4 @@ F:\ANKIT DHIMAN\GeneInsure_13_mar\GeneInsure_service_13_mar\SmsService\bin\Debug
 F:\ANKIT DHIMAN\GeneInsure_13_mar\GeneInsure_service_13_mar\SmsService\bin\Debug\SmsService.pdb
 F:\ANKIT DHIMAN\GeneInsure_13_mar\GeneInsure_service_13_mar\SmsService\obj\Debug\SmsService.ProjectInstaller.resources
 F:\ANKIT DHIMAN\GeneInsure_13_mar\GeneInsure_service_13_mar\SmsService\obj\Debug\SmsService.csproj.GenerateResource.Cache
+F:\ANKIT DHIMAN\GeneInsure_13_mar\GeneInsure_service_13_mar\SmsService\obj\Debug\SmsService.csprojResolveAssemblyReference.cache

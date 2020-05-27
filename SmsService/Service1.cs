@@ -32,7 +32,7 @@ namespace SmsService
             // this.timer1.Interval = 30000; //every 30 secs //3600000 :one hour
              this.timer1.Interval = 3600000; //every 1 hour
            // this.timer1.Interval = 86400000; // 24 Hours
-            //this.timer1.Interval = 60000;
+           // this.timer1.Interval = 180000;
             this.timer1.Elapsed += new System.Timers.ElapsedEventHandler(this.timer1_Tick);
             timer1.Enabled = true;
             //Library.WriteErrorLog("window service started");
@@ -729,8 +729,9 @@ namespace SmsService
                 mailBody.AppendFormat("<h1>Please click below link to get gwp report.</h1>");
                 mailBody.AppendFormat("<p><a href='"+ path+"'>GWPReport</a></p>");
 
+                string ccList = "charles@gene.co.zw, emmanuel@gene.co.zw, masimba@gene.co.zw, blessing@gene.co.zw"; 
 
-                objsmsemail.SendEmail("it@gene.co.zw", "", "", "GWPReport_" + DateTime.Now.ToShortDateString(), mailBody.ToString(), _attachements);
+                objsmsemail.SendEmail("it@gene.co.zw", ccList, "", "GWPReport_" + DateTime.Now.ToShortDateString(), mailBody.ToString(), _attachements);
             
                 //it@gene.co.zw
 
@@ -749,14 +750,12 @@ namespace SmsService
                 sw.Dispose();
                 sw.Close();
             }
-
             // Info.  
             //return isSuccess;
-
         }
         public DataTable GetGWPData()
         {
-
+            int PayLater = 7;
             DataTable table = new DataTable();
             string connectionString = System.Configuration.ConfigurationManager.AppSettings["Insurance"].ToString();
             //var LicenceTickets = InsuranceContext.LicenceTickets.All(where: $"CAST(CreatedDate as date) <= '{DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd")}'");
@@ -777,14 +776,14 @@ namespace SmsService
             query += " join VehicleDetail on PolicyDetail.Id = VehicleDetail.PolicyId ";
             query += "join SummaryVehicleDetail on VehicleDetail.id = SummaryVehicleDetail.VehicleDetailsId ";
             query += " join SummaryDetail on SummaryDetail.id = SummaryVehicleDetail.SummaryDetailId ";
-            query += "  join PaymentInformation on SummaryDetail.Id=PaymentInformation.SummaryDetailId ";
+           // query += "  join PaymentInformation on SummaryDetail.Id=PaymentInformation.SummaryDetailId ";
             query += " join PaymentMethod on SummaryDetail.PaymentMethodId = PaymentMethod.Id ";
             query += "join PaymentTerm on VehicleDetail.PaymentTermId = PaymentTerm.Id ";
             query += " left join CoverType on VehicleDetail.CoverTypeId = CoverType.Id ";
             query += " left join Currency on VehicleDetail.CurrencyId = Currency.Id ";
             query += " left join BusinessSource on BusinessSource.Id = VehicleDetail.BusinessSourceDetailId ";
             query += " left   join SourceDetail on VehicleDetail.BusinessSourceDetailId = SourceDetail.Id join AspNetUsers on AspNetUsers.id=customer.UserID join AspNetUserRoles on AspNetUserRoles.UserId=AspNetUsers.Id ";
-            query += " where (VehicleDetail.IsActive = 1 or VehicleDetail.IsActive = null) and SummaryDetail.isQuotation=0 and   CONVERT(date, VehicleDetail.TransactionDate) = convert(date, '" + yesterdayDate.ToShortDateString() + "', 101)  order by  VehicleDetail.Id desc ";
+            query += " where (VehicleDetail.IsActive = 1 or VehicleDetail.IsActive = null) and SummaryDetail.isQuotation=0 and SummaryDetail.PaymentMethodId <>"+PayLater+" and  CONVERT(date, VehicleDetail.TransactionDate) = convert(date, '" + yesterdayDate.ToShortDateString() + "', 101)  order by  VehicleDetail.Id desc ";
 
             SqlConnection connection = new SqlConnection(connectionString);
             connection.Open();
@@ -793,15 +792,27 @@ namespace SmsService
             adapt.Fill(table);
             connection.Close();
 
+            if (table.Rows.Count > 0)
+            {
+                Library.WriteErrorLog("sum of total: ");
+                DataRow row = table.NewRow();
+                row["Currency"] = "Total";
+                row["Premium_due"] = table.Compute("Sum(Premium_due)", "Premium_due > 0");
+                row["Stamp_duty"] = table.Compute("Sum(Stamp_duty)", "Stamp_duty > 0");
+                row["ZTSC_Levy"] = table.Compute("Sum(ZTSC_Levy)", "ZTSC_Levy > 0");
+
+                row["RadioLicenseCost"] = table.Compute("Sum(RadioLicenseCost)", "RadioLicenseCost > 0");
+                row["Zinara_License_Fee"] = table.Compute("Sum(Zinara_License_Fee)", "Zinara_License_Fee > 0");
+                table.Rows.Add(row);
+            }
+
+
+
             Library.WriteErrorLog("row count: " + table.Rows.Count);
 
             return table;
         }
        
-
-
-
-
         #endregion
 
 
