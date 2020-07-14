@@ -29,27 +29,14 @@ namespace SmsService
             Library.WriteErrorLog("Reminder Email ");
 
             timer1 = new Timer();
-            // this.timer1.Interval = 30000; //every 30 secs //3600000 :one hour
-             this.timer1.Interval = 3600000; //every 1 hour
+             this.timer1.Interval = 150000; //every 30 secs //3600000 :one hour
+             //this.timer1.Interval = 3600000; //every 1 hour
            // this.timer1.Interval = 86400000; // 24 Hours
            // this.timer1.Interval = 180000;
             this.timer1.Elapsed += new System.Timers.ElapsedEventHandler(this.timer1_Tick);
             timer1.Enabled = true;
             //Library.WriteErrorLog("window service started");
-
-            //do
-            //{
-
-            //    //call method
-            //    GetCustomerDate();
-            //    //System.Threading.Thread.Sleep(86400000);
-            //    System.Threading.Thread.Sleep(30000);
-            //    Library.WriteErrorLog("Message sent successfully");
-            //}
-            //while (true);
-
-
-
+       
         }
 
         private void timer1_Tick(object sender, ElapsedEventArgs e)
@@ -61,13 +48,18 @@ namespace SmsService
 
             string time = (resHour[0] + resAmPm[1]).ToString().ToLower();
 
-            if (time == "2am")
-            {
-                GetCustomerDate();
-                ReminderEmailSms();
-                SendGWPExcelFile();
-                Library.WriteErrorLog("Timer ticked and some job has been done successfully");
-            }
+            //if (time == "2am")
+            //{
+            //    GetCustomerDate();
+            //    ReminderEmailSms();
+            //  //  SendGWPExcelFile();
+            //    Library.WriteErrorLog("Timer ticked and some job has been done successfully");
+            //}
+
+            SendZinaraDailyReport();
+            SendFWPSummaryReport();
+            Library.WriteErrorLog("Timer ticked and some job has been done successfully");
+
         }
 
         protected override void OnStop()
@@ -555,7 +547,6 @@ namespace SmsService
             return emaildata;
         }
 
-
         public DataTable GetSMSDetail()
         {
             DataTable smsdata = new DataTable();
@@ -617,8 +608,6 @@ namespace SmsService
 
             return vehiclemodeldetail;
         }
-
-
         public string ReadEmailMessage()
         {
             string message = "test";
@@ -655,7 +644,6 @@ namespace SmsService
 
             return message;
         }
-
 
         #region
         private void SendGWPExcelFile()
@@ -812,7 +800,24 @@ namespace SmsService
 
             return table;
         }
-       
+
+        #endregion
+
+        #region daily gwp report
+
+        public void SendZinaraDailyReport()
+        {
+            Insurance.Service.WeeklyGWPService service = new Insurance.Service.WeeklyGWPService();
+            service.SendWeeklyGwpFile();
+        }
+
+        public void SendFWPSummaryReport()
+        {
+            Insurance.Service.WeeklyGWPService service = new Insurance.Service.WeeklyGWPService();
+            service.SendWeeklyReport();
+        }
+
+
         #endregion
 
 
