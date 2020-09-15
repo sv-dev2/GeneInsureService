@@ -126,6 +126,9 @@ namespace Insurance.Service
             }
             return data;
         }
+
+
+
         private static T GetItem<T>(DataRow dr)
         {
             Type temp = typeof(T);
@@ -135,14 +138,124 @@ namespace Insurance.Service
             {
                 foreach (PropertyInfo pro in temp.GetProperties())
                 {
+                    //in case you have a enum/GUID datatype in your model
+                    //We will check field's dataType, and convert the value in it.
                     if (pro.Name == column.ColumnName)
-                        pro.SetValue(obj, dr[column.ColumnName], null);
+                    {
+                        try
+                        {
+                            var convertedValue = GetValueByDataType(pro.PropertyType, dr[column.ColumnName]);
+                            // pro.SetValue(obj, convertedValue, null);
+
+                            SetValue(obj, column.ColumnName, convertedValue);
+
+                        }
+                        catch (Exception e)
+                        {
+                            //ex handle code                   
+                            throw;
+                        }
+                        //pro.SetValue(obj, dr[column.ColumnName], null);
+                    }
                     else
                         continue;
                 }
             }
             return obj;
         }
+        //private static T GetItem<T>(DataRow dr)
+        //{
+
+        //    Type temp = typeof(T);
+        //    T obj = Activator.CreateInstance<T>();
+
+        //    try
+        //    {
+        //        foreach (DataColumn column in dr.Table.Columns)
+        //        {
+        //            foreach (PropertyInfo pro in temp.GetProperties())
+        //            {
+        //                if (pro.Name == column.ColumnName)
+        //                    pro.SetValue(obj, dr[column.ColumnName], null);
+        //                else
+        //                    continue;
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Library.WriteErrorLog(" read property  :" + ex.Message);
+        //    }
+
+
+
+        //    return obj;
+        //}
+
+
+        private static object GetValueByDataType(Type propertyType, object o)
+        {
+            if (o.ToString() == "null")
+            {
+                return null;
+            }
+            if (propertyType == (typeof(Guid)) || propertyType == typeof(Guid?))
+            {
+                return Guid.Parse(o.ToString());
+            }
+            else if (propertyType == typeof(int) || propertyType.IsEnum)
+            {
+                return Convert.ToInt32(o);
+            }
+            else if (propertyType == typeof(decimal))
+            {
+                return Convert.ToDecimal(o);
+            }
+            else if (propertyType == typeof(long))
+            {
+                return Convert.ToInt64(o);
+            }
+            else if (propertyType == typeof(bool) || propertyType == typeof(bool?))
+            {
+                return Convert.ToBoolean(o);
+            }
+            else if (propertyType == typeof(DateTime) || propertyType == typeof(DateTime?))
+            {
+                return Convert.ToDateTime(o);
+            }
+            return o.ToString();
+        }
+
+
+        public static void SetValue(object inputObject, string propertyName, object propertyVal)
+        {
+            //find out the type
+            Type type = inputObject.GetType();
+
+            //get the property information based on the type
+            System.Reflection.PropertyInfo propertyInfo = type.GetProperty(propertyName);
+
+            //find the property type
+            Type propertyType = propertyInfo.PropertyType;
+
+            //Convert.ChangeType does not handle conversion to nullable types
+            //if the property type is nullable, we need to get the underlying type of the property
+            var targetType = IsNullableType(propertyType) ? Nullable.GetUnderlyingType(propertyType) : propertyType;
+
+            //Returns an System.Object with the specified System.Type and whose value is
+            //equivalent to the specified object.
+            propertyVal = Convert.ChangeType(propertyVal, targetType);
+
+            //Set the value of the property
+            propertyInfo.SetValue(inputObject, propertyVal, null);
+
+        }
+        private static bool IsNullableType(Type type)
+        {
+            return type.IsGenericType && type.GetGenericTypeDefinition().Equals(typeof(Nullable<>));
+        }
+
+
         public static void GenerateExcel(List<ZinaraReportModel> grossWrittenPremiumReports)
         {
 
@@ -188,8 +301,11 @@ namespace Insurance.Service
 
                     Debug.WriteLine("***********SendEmail**************");
 
+                    string email = System.Configuration.ConfigurationManager.AppSettings["gwpemail"];
                     Insurance.Service.EmailService objEmailService = new Insurance.Service.EmailService();
-                    objEmailService.SendAttachedEmail("chandan.kumar@kindlebit.com", "", "", "Zinara Report - " + DateTime.Now.ToShortDateString(), mailBody.ToString(), attachmentModels);
+                    objEmailService.SendAttachedEmail(email, "", "", "Zinara Report - " + DateTime.Now.ToShortDateString(), mailBody.ToString(), attachmentModels);
+
+                    Library.WriteErrorLog("Zinara Report - " + DateTime.Now.ToShortDateString());
                 }
 
 
@@ -218,18 +334,39 @@ namespace Insurance.Service
 
         public void SendWeeklyReport()
         {
-            int year = DateTime.Now.Year;
-            int month = DateTime.Now.Month;
-            string firstWeekStart = DateTime.Now.ToString("MM") + "/01/" + DateTime.Now.Year.ToString();
-            string firstWeekEnd = DateTime.Now.ToString("MM") + "/07/" + DateTime.Now.Year.ToString();
-            string secondWeekStart = DateTime.Now.ToString("MM") + "/08/" + DateTime.Now.Year.ToString();
-            string secondWeekEnd = DateTime.Now.ToString("MM") + "/14/" + DateTime.Now.Year.ToString();
-            string thirdWeekStart = DateTime.Now.ToString("MM") + "/15/" + DateTime.Now.Year.ToString();
-            string thirdWeekEnd = DateTime.Now.ToString("MM") + "/21/" + DateTime.Now.Year.ToString();
-            string fourthWeekStart = DateTime.Now.ToString("MM") + "/22/" + DateTime.Now.Year.ToString();
-            DateTime lastDate = new DateTime(year, month,
-                                    DateTime.DaysInMonth(year, month));
-            string fourthWeekEnd = lastDate.ToString("MM/dd/yyyy");
+
+            Library.WriteErrorLog("Start Summary GWP Report");
+
+
+            var dtOneMonthBack = DateTime.Now.AddMonths(-1);
+            int year = dtOneMonthBack.Year;
+            int month = dtOneMonthBack.Month;
+
+            //string firstWeekStart = dtOneMonthBack.ToString("MM") + "/01/" + DateTime.Now.Year.ToString();
+            //string firstWeekEnd = dtOneMonthBack.ToString("MM") + "/07/" + DateTime.Now.Year.ToString();
+            //string secondWeekStart = dtOneMonthBack.ToString("MM") + "/08/" + DateTime.Now.Year.ToString();
+            //string secondWeekEnd = dtOneMonthBack.ToString("MM") + "/14/" + DateTime.Now.Year.ToString();
+
+            //string thirdWeekStart = dtOneMonthBack.ToString("MM") + "/15/" + DateTime.Now.Year.ToString();
+            //string thirdWeekEnd = dtOneMonthBack.ToString("MM") + "/21/" + DateTime.Now.Year.ToString();
+            //string fourthWeekStart = dtOneMonthBack.ToString("MM") + "/22/" + DateTime.Now.Year.ToString();
+            //DateTime lastDate = new DateTime(year, month,
+            //                        DateTime.DaysInMonth(year, month));
+            //string fourthWeekEnd = lastDate.ToString("MM/dd/yyyy");
+
+
+            string firstWeekStart = dtOneMonthBack.ToString("MM/dd/yyyy");
+            string firstWeekEnd = dtOneMonthBack.AddDays(7).ToString("MM/dd/yyyy");
+
+            string secondWeekStart = dtOneMonthBack.AddDays(8).ToString("MM/dd/yyyy");
+            string secondWeekEnd = dtOneMonthBack.AddDays(14).ToString("MM/dd/yyyy");
+
+            string thirdWeekStart = dtOneMonthBack.AddDays(15).ToString("MM/dd/yyyy");
+            string thirdWeekEnd = dtOneMonthBack.AddDays(21).ToString("MM/dd/yyyy");
+            string fourthWeekStart = dtOneMonthBack.AddDays(22).ToString("MM/dd/yyyy");
+            //DateTime lastDate = new DateTime(year, month,
+            //                        DateTime.DaysInMonth(year, month));
+            string fourthWeekEnd = DateTime.Now.ToString("MM/dd/yyyy");
 
             List<GrossWrittenPremiumReportModels> ListGrossWrittenPremiumReport = new List<GrossWrittenPremiumReportModels>();
             ListGrossWrittenPremiumReportModels _ListGrossWrittenPremiumReport = new ListGrossWrittenPremiumReportModels();
@@ -319,7 +456,7 @@ namespace Insurance.Service
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
+                Library.WriteErrorLog("Summary GWP Report Count - " + ex.Message);
             }
 
         }
@@ -328,13 +465,22 @@ namespace Insurance.Service
         {
             try
             {
-                int year = DateTime.Now.Year;
-                int month = DateTime.Now.Month;
-                string firstWeekEnd = DateTime.Now.ToString("MM") + "/07/" + DateTime.Now.Year.ToString();
-                string secondWeekEnd = DateTime.Now.ToString("MM") + "/14/" + DateTime.Now.Year.ToString();
-                string thirdWeekEnd = DateTime.Now.ToString("MM") + "/21/" + DateTime.Now.Year.ToString();
-                DateTime lastDate = new DateTime(year, month,
-                                    DateTime.DaysInMonth(year, month));
+                Library.WriteErrorLog("start GenerateExcel2 ");
+
+                var dtOneMonthBack = DateTime.Now.AddMonths(-1);
+                int year = dtOneMonthBack.Year;
+                int month = dtOneMonthBack.Month;
+
+                //string firstWeekEnd = DateTime.Now.ToString("MM") + "/07/" + DateTime.Now.Year.ToString();
+                //string secondWeekEnd = DateTime.Now.ToString("MM") + "/14/" + DateTime.Now.Year.ToString();
+                //string thirdWeekEnd = DateTime.Now.ToString("MM") + "/21/" + DateTime.Now.Year.ToString();
+                //DateTime lastDate = new DateTime(year, month,
+                //                    DateTime.DaysInMonth(year, month));
+
+                string firstWeekEnd = dtOneMonthBack.AddDays(7).ToString("MM/dd/yyyy");
+                string secondWeekEnd = dtOneMonthBack.AddDays(14).ToString("MM/dd/yyyy");
+                string thirdWeekEnd = dtOneMonthBack.AddDays(21).ToString("MM/dd/yyyy");
+                DateTime lastDate = DateTime.Now;
 
                 int firstTotalCount = grossWrittenPremiumReports.Sum(x => x.FirstWeekCount);
                 int secondTotalCount = grossWrittenPremiumReports.Sum(x => x.SecondWeekCount);
@@ -397,8 +543,12 @@ namespace Insurance.Service
 
                     Debug.WriteLine("***********SendEmail**************");
 
+                    string email = System.Configuration.ConfigurationManager.AppSettings["gwpemail"];
+
                     Insurance.Service.EmailService objEmailService = new Insurance.Service.EmailService();
-                    objEmailService.SendAttachedEmail("chandan.kumar@kindlebit.com", "", "", "Summary GWP Report - " + DateTime.Now.ToLongDateString(), mailBody.ToString(), attachmentModels);
+                    objEmailService.SendAttachedEmail(email, "", "", "Summary GWP Report - " + DateTime.Now.ToLongDateString(), mailBody.ToString(), attachmentModels);
+
+                    Library.WriteErrorLog("Successfully Summary GWP Report - " + DateTime.Now.ToLongDateString());
                 }
 
 
@@ -407,10 +557,7 @@ namespace Insurance.Service
             catch (Exception ex)
             {
                 // Info.  
-                Debug.WriteLine("*************************");
-                Debug.WriteLine(ex.Message);
-                Debug.WriteLine(ex);
-                Debug.WriteLine("*************************");
+                Library.WriteErrorLog("Summary GWP Report - " + ex.Message);
             }
             finally
             {
@@ -426,7 +573,7 @@ namespace Insurance.Service
             var ListGrossWrittenPremiumReport = new List<GrossWrittenPremiumReportModels>();
             try
             {
-                int PayLater = 7;
+                int PayLater = 6;
                 var query = " select PolicyDetail.PolicyNumber as Policy_Number, Customer.ALMId, case when Customer.ALMId is null  then  [dbo].fn_GetUserCallCenterAgent(SummaryDetail.CreatedBy) else [dbo].fn_GetUserALM(Customer.BranchId) end  as PolicyCreatedBy, Customer.FirstName + ' ' + Customer.LastName as Customer_Name,VehicleDetail.TransactionDate as Transaction_date, ";
                 query += "  case when Customer.id=SummaryDetail.CreatedBy then [dbo].fn_GetUserBranch(Customer.id) else [dbo].fn_GetUserBranch(SummaryDetail.CreatedBy) end as BranchName, ";
                 query += " VehicleDetail.CoverNote as CoverNoteNum, PaymentMethod.Name as Payment_Mode, PaymentTerm.Name as Payment_Term,CoverType.Name as CoverType, Currency.Name as Currency, ";

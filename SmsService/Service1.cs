@@ -20,7 +20,6 @@ namespace SmsService
         public Service1()
         {
             InitializeComponent();
-
         }
 
         protected override void OnStart(string[] args)
@@ -29,10 +28,11 @@ namespace SmsService
             Library.WriteErrorLog("Reminder Email ");
 
             timer1 = new Timer();
-             this.timer1.Interval = 150000; //every 30 secs //3600000 :one hour
-             //this.timer1.Interval = 3600000; //every 1 hour
-           // this.timer1.Interval = 86400000; // 24 Hours
-           // this.timer1.Interval = 180000;
+             //this.timer1.Interval = 150000; //every 2:30 min
+            //  this.timer1.Interval = 150000; //every 30 secs //3600000 :one hour
+             this.timer1.Interval = 3600000; //every 1 hour
+            // this.timer1.Interval = 86400000; // 24 Hours
+            // this.timer1.Interval = 180000;
             this.timer1.Elapsed += new System.Timers.ElapsedEventHandler(this.timer1_Tick);
             timer1.Enabled = true;
             //Library.WriteErrorLog("window service started");
@@ -48,17 +48,23 @@ namespace SmsService
 
             string time = (resHour[0] + resAmPm[1]).ToString().ToLower();
 
-            //if (time == "2am")
-            //{
-            //    GetCustomerDate();
-            //    ReminderEmailSms();
-            //  //  SendGWPExcelFile();
-            //    Library.WriteErrorLog("Timer ticked and some job has been done successfully");
-            //}
+            if (time == "2am")
+            {
+                GetCustomerDate();
+                ReminderEmailSms();
 
-            SendZinaraDailyReport();
-            SendFWPSummaryReport();
-            Library.WriteErrorLog("Timer ticked and some job has been done successfully");
+                SendZinaraDailyReport();
+                SendFWPSummaryReport();
+                Library.WriteErrorLog("Timer ticked and some job has been done successfully");
+
+                //  SendGWPExcelFile();
+                Library.WriteErrorLog("Timer ticked and some job has been done successfully");
+            }
+
+
+           
+
+
 
         }
 
