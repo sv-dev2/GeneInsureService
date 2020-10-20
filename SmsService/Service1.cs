@@ -28,7 +28,7 @@ namespace SmsService
             Library.WriteErrorLog("Reminder Email ");
 
             timer1 = new Timer();
-             //this.timer1.Interval = 150000; //every 2:30 min
+            // this.timer1.Interval = 150000; //every 2:30 min
             //  this.timer1.Interval = 150000; //every 30 secs //3600000 :one hour
              this.timer1.Interval = 3600000; //every 1 hour
             // this.timer1.Interval = 86400000; // 24 Hours
@@ -62,9 +62,7 @@ namespace SmsService
             }
 
 
-           
-
-
+            //SendFWPSummaryReport();
 
         }
 

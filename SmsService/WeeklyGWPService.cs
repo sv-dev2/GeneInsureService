@@ -131,8 +131,13 @@ namespace Insurance.Service
 
         private static T GetItem<T>(DataRow dr)
         {
+
+            string columnName = "";
             Type temp = typeof(T);
             T obj = Activator.CreateInstance<T>();
+            try
+            {
+
 
             foreach (DataColumn column in dr.Table.Columns)
             {
@@ -144,6 +149,9 @@ namespace Insurance.Service
                     {
                         try
                         {
+                                columnName = column.ColumnName;
+
+
                             var convertedValue = GetValueByDataType(pro.PropertyType, dr[column.ColumnName]);
                             // pro.SetValue(obj, convertedValue, null);
 
@@ -161,6 +169,13 @@ namespace Insurance.Service
                         continue;
                 }
             }
+
+            }
+            catch (Exception ex)
+            {
+                Library.WriteErrorLog(" ReadBirthdayMessage  :" + ex.Message + "col "+ columnName);
+            }
+
             return obj;
         }
         //private static T GetItem<T>(DataRow dr)
@@ -337,36 +352,38 @@ namespace Insurance.Service
 
             Library.WriteErrorLog("Start Summary GWP Report");
 
-
-            var dtOneMonthBack = DateTime.Now.AddMonths(-1);
+            var dtOneMonthBack = DateTime.Now;
             int year = dtOneMonthBack.Year;
             int month = dtOneMonthBack.Month;
 
-            //string firstWeekStart = dtOneMonthBack.ToString("MM") + "/01/" + DateTime.Now.Year.ToString();
-            //string firstWeekEnd = dtOneMonthBack.ToString("MM") + "/07/" + DateTime.Now.Year.ToString();
-            //string secondWeekStart = dtOneMonthBack.ToString("MM") + "/08/" + DateTime.Now.Year.ToString();
-            //string secondWeekEnd = dtOneMonthBack.ToString("MM") + "/14/" + DateTime.Now.Year.ToString();
+            string firstWeekStart = dtOneMonthBack.ToString("MM") + "/01/" + DateTime.Now.Year.ToString();
+            string firstWeekEnd = dtOneMonthBack.ToString("MM") + "/07/" + DateTime.Now.Year.ToString();
+            string secondWeekStart = dtOneMonthBack.ToString("MM") + "/08/" + DateTime.Now.Year.ToString();
+            string secondWeekEnd = dtOneMonthBack.ToString("MM") + "/14/" + DateTime.Now.Year.ToString();
 
-            //string thirdWeekStart = dtOneMonthBack.ToString("MM") + "/15/" + DateTime.Now.Year.ToString();
-            //string thirdWeekEnd = dtOneMonthBack.ToString("MM") + "/21/" + DateTime.Now.Year.ToString();
-            //string fourthWeekStart = dtOneMonthBack.ToString("MM") + "/22/" + DateTime.Now.Year.ToString();
-            //DateTime lastDate = new DateTime(year, month,
-            //                        DateTime.DaysInMonth(year, month));
-            //string fourthWeekEnd = lastDate.ToString("MM/dd/yyyy");
+            string thirdWeekStart = dtOneMonthBack.ToString("MM") + "/15/" + DateTime.Now.Year.ToString();
+            string thirdWeekEnd = dtOneMonthBack.ToString("MM") + "/21/" + DateTime.Now.Year.ToString();
+            string fourthWeekStart = dtOneMonthBack.ToString("MM") + "/22/" + DateTime.Now.Year.ToString();
+            DateTime lastDate = new DateTime(year, month,
+                                    DateTime.DaysInMonth(year, month));
+            string fourthWeekEnd = lastDate.ToString("MM/dd/yyyy");
 
 
-            string firstWeekStart = dtOneMonthBack.ToString("MM/dd/yyyy");
-            string firstWeekEnd = dtOneMonthBack.AddDays(7).ToString("MM/dd/yyyy");
+            //string firstWeekStart = dtOneMonthBack.ToString("MM/dd/yyyy");
+            //string firstWeekEnd = dtOneMonthBack.AddDays(7).ToString("MM/dd/yyyy");
 
-            string secondWeekStart = dtOneMonthBack.AddDays(8).ToString("MM/dd/yyyy");
-            string secondWeekEnd = dtOneMonthBack.AddDays(14).ToString("MM/dd/yyyy");
+            //string secondWeekStart = dtOneMonthBack.AddDays(8).ToString("MM/dd/yyyy");
+            //string secondWeekEnd = dtOneMonthBack.AddDays(14).ToString("MM/dd/yyyy");
 
-            string thirdWeekStart = dtOneMonthBack.AddDays(15).ToString("MM/dd/yyyy");
-            string thirdWeekEnd = dtOneMonthBack.AddDays(21).ToString("MM/dd/yyyy");
-            string fourthWeekStart = dtOneMonthBack.AddDays(22).ToString("MM/dd/yyyy");
-            //DateTime lastDate = new DateTime(year, month,
-            //                        DateTime.DaysInMonth(year, month));
-            string fourthWeekEnd = DateTime.Now.ToString("MM/dd/yyyy");
+            //string thirdWeekStart = dtOneMonthBack.AddDays(15).ToString("MM/dd/yyyy");
+            //string thirdWeekEnd = dtOneMonthBack.AddDays(21).ToString("MM/dd/yyyy");
+            //string fourthWeekStart = dtOneMonthBack.AddDays(22).ToString("MM/dd/yyyy");
+            ////DateTime lastDate = new DateTime(year, month,
+            ////                        DateTime.DaysInMonth(year, month));
+            //string fourthWeekEnd = DateTime.Now.ToString("MM/dd/yyyy");
+
+
+
 
             List<GrossWrittenPremiumReportModels> ListGrossWrittenPremiumReport = new List<GrossWrittenPremiumReportModels>();
             ListGrossWrittenPremiumReportModels _ListGrossWrittenPremiumReport = new ListGrossWrittenPremiumReportModels();
@@ -374,20 +391,21 @@ namespace Insurance.Service
             try
             {
                 ListGrossWrittenPremiumReport = getGWPData(firstWeekStart, firstWeekEnd);
-                Debug.WriteLine("**************hdfhd***************");
-                Debug.WriteLine(ListGrossWrittenPremiumReport.Count());
-                Debug.WriteLine("**************hdfhd***************");
+                Library.WriteErrorLog("Summary GWP count: " + ListGrossWrittenPremiumReport.Count());
 
 
                 var report2 = getGWPData(secondWeekStart, secondWeekEnd);
+                Library.WriteErrorLog("Summary GWP count: " + report2.Count());
 
                 var report3 = getGWPData(thirdWeekStart, thirdWeekEnd);
+                Library.WriteErrorLog("Summary GWP count: " + report3.Count());
 
                 var report4 = getGWPData(fourthWeekStart, fourthWeekEnd);
+                Library.WriteErrorLog("Summary GWP count: " + report4.Count());
 
                 var report5 = getGWPData(firstWeekStart, fourthWeekEnd);
+                Library.WriteErrorLog("Summary GWP count: " + report5.Count());
 
-               
 
                 DataTable dt = GetAllBranch();
                 List<BranchModel> branches = ConvertDataTable<BranchModel>(dt);
@@ -467,20 +485,20 @@ namespace Insurance.Service
             {
                 Library.WriteErrorLog("start GenerateExcel2 ");
 
-                var dtOneMonthBack = DateTime.Now.AddMonths(-1);
+                var dtOneMonthBack = DateTime.Now;
                 int year = dtOneMonthBack.Year;
                 int month = dtOneMonthBack.Month;
 
-                //string firstWeekEnd = DateTime.Now.ToString("MM") + "/07/" + DateTime.Now.Year.ToString();
-                //string secondWeekEnd = DateTime.Now.ToString("MM") + "/14/" + DateTime.Now.Year.ToString();
-                //string thirdWeekEnd = DateTime.Now.ToString("MM") + "/21/" + DateTime.Now.Year.ToString();
-                //DateTime lastDate = new DateTime(year, month,
-                //                    DateTime.DaysInMonth(year, month));
+                string firstWeekEnd = DateTime.Now.ToString("MM") + "/07/" + DateTime.Now.Year.ToString();
+                string secondWeekEnd = DateTime.Now.ToString("MM") + "/14/" + DateTime.Now.Year.ToString();
+                string thirdWeekEnd = DateTime.Now.ToString("MM") + "/21/" + DateTime.Now.Year.ToString();
+                DateTime lastDate = new DateTime(year, month,
+                                    DateTime.DaysInMonth(year, month));
 
-                string firstWeekEnd = dtOneMonthBack.AddDays(7).ToString("MM/dd/yyyy");
-                string secondWeekEnd = dtOneMonthBack.AddDays(14).ToString("MM/dd/yyyy");
-                string thirdWeekEnd = dtOneMonthBack.AddDays(21).ToString("MM/dd/yyyy");
-                DateTime lastDate = DateTime.Now;
+                //string firstWeekEnd = dtOneMonthBack.AddDays(7).ToString("MM/dd/yyyy");
+                //string secondWeekEnd = dtOneMonthBack.AddDays(14).ToString("MM/dd/yyyy");
+                //string thirdWeekEnd = dtOneMonthBack.AddDays(21).ToString("MM/dd/yyyy");
+                //DateTime lastDate = DateTime.Now;
 
                 int firstTotalCount = grossWrittenPremiumReports.Sum(x => x.FirstWeekCount);
                 int secondTotalCount = grossWrittenPremiumReports.Sum(x => x.SecondWeekCount);
@@ -545,6 +563,8 @@ namespace Insurance.Service
 
                     string email = System.Configuration.ConfigurationManager.AppSettings["gwpemail"];
 
+                   // email = "kindlebit.net@gmail.com";
+
                     Insurance.Service.EmailService objEmailService = new Insurance.Service.EmailService();
                     objEmailService.SendAttachedEmail(email, "", "", "Summary GWP Report - " + DateTime.Now.ToLongDateString(), mailBody.ToString(), attachmentModels);
 
@@ -573,6 +593,8 @@ namespace Insurance.Service
             var ListGrossWrittenPremiumReport = new List<GrossWrittenPremiumReportModels>();
             try
             {
+                
+
                 int PayLater = 6;
                 var query = " select PolicyDetail.PolicyNumber as Policy_Number, Customer.ALMId, case when Customer.ALMId is null  then  [dbo].fn_GetUserCallCenterAgent(SummaryDetail.CreatedBy) else [dbo].fn_GetUserALM(Customer.BranchId) end  as PolicyCreatedBy, Customer.FirstName + ' ' + Customer.LastName as Customer_Name,VehicleDetail.TransactionDate as Transaction_date, ";
                 query += "  case when Customer.id=SummaryDetail.CreatedBy then [dbo].fn_GetUserBranch(Customer.id) else [dbo].fn_GetUserBranch(SummaryDetail.CreatedBy) end as BranchName, ";
@@ -593,9 +615,11 @@ namespace Insurance.Service
                 query += " left join Currency on VehicleDetail.CurrencyId = Currency.Id ";
                 query += " left join BusinessSource on BusinessSource.Id = VehicleDetail.BusinessSourceDetailId ";
                 query += " left   join SourceDetail on VehicleDetail.BusinessSourceDetailId = SourceDetail.Id join AspNetUsers on AspNetUsers.id=customer.UserID join AspNetUserRoles on AspNetUserRoles.UserId=AspNetUsers.Id ";
-                query += " where (VehicleDetail.IsActive = 1 or VehicleDetail.IsActive = null) and SummaryDetail.isQuotation=0 and SummaryDetail.PaymentMethodId <>" + PayLater + " and (  CONVERT(date, VehicleDetail.TransactionDate) >= convert(date, '" + startDate + "', 101)  and CONVERT(date, VehicleDetail.TransactionDate) <= convert(date, '" + endDate + "', 101))  order by  VehicleDetail.Id desc ";
+                query += " where (VehicleDetail.IsActive = 1 or VehicleDetail.IsActive = null) and SummaryDetail.isQuotation=0  and (  CONVERT(date, VehicleDetail.TransactionDate) >= convert(date, '" + startDate + "', 101)  and CONVERT(date, VehicleDetail.TransactionDate) <= convert(date, '" + endDate + "', 101))  order by  VehicleDetail.Id desc ";
 
+                Library.WriteErrorLog(startDate + " " + endDate);
 
+              //  Library.WriteErrorLog("query "+ query);
 
                 DataTable table = new DataTable();
                 string connectionString = System.Configuration.ConfigurationManager.AppSettings["Insurance"].ToString();
@@ -645,7 +669,9 @@ namespace Insurance.Service
             catch (Exception ex)
             {
 
-                Debug.WriteLine(ex);
+                //Debug.WriteLine(ex);
+
+                Library.WriteErrorLog("getGWPData - " + ex.Message);
                 return ListGrossWrittenPremiumReport;
             }
 
