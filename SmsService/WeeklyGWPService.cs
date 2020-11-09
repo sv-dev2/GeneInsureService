@@ -518,11 +518,14 @@ namespace Insurance.Service
                 MemoryStream outputStream = new MemoryStream();
                 using (ExcelPackage package = new ExcelPackage(outputStream))
                 {
+                    var src = DateTime.Now;
+                    var hm = new DateTime(src.Year, src.Month, src.Day, src.Hour, src.Minute, 0);
+
 
                     // export each facility's rollup and detail to tabs in Excel (two tabs per facility)
                     ExcelWorksheet facilityWorksheet = package.Workbook.Worksheets.Add("Summary GWP Report");
                     facilityWorksheet.Cells["A1"].LoadFromText("GWP Summary Report").Style.Font.Bold = true;
-                    facilityWorksheet.Cells["A3"].Value = "Report Generated Date: " + DateTime.Now.ToString();
+                    facilityWorksheet.Cells["A3"].Value = "Report Generated Date: " + DateTime.Now.ToString("HH:mm") + " " + DateTime.Now.ToShortDateString();
                     facilityWorksheet.Cells["A5"].LoadFromText("Week Ending").Style.Font.Bold = true;
                     facilityWorksheet.Cells["B5"].Value = firstWeekEnd;
                     facilityWorksheet.Cells["D5"].Value = secondWeekEnd;

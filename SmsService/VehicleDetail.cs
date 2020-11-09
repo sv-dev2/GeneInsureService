@@ -89,5 +89,28 @@ namespace SmsService
         public string AlmId { get; set; }
     }
 
+    public class RecieptModel
+    {
+        public string AgentName { get; set; }
+        public string Policy_Number { get; set; }
+        public string VRN { get; set; }
+        public string Transaction_date { get; set; }
+        public string Customer_Name { get; set; }
+        public decimal Premium_due { get; set; }
+        public int PolicyId { get; set; }
+        public double Days { get; set; }
+    }
+
+    public class RecieptDetail
+    {
+        public string AgentName { get; set; }
+        public string Policy_Number { get; set; }
+        public string VRN { get; set; }
+        public string Transaction_date { get; set; }
+        public string Customer_Name { get; set; }
+        public decimal Premium_due { get; set; }
+        public double Days { get; set; }
+    }
+
 
 }

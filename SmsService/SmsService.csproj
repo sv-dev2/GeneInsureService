@@ -42,6 +42,13 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="PresentationCore" />
+    <Reference Include="SimplePdfReport.Reporting">
+      <HintPath>..\..\test\Louis\report\report\SimplePdfReport.Reporting\bin\Debug\SimplePdfReport.Reporting.dll</HintPath>
+    </Reference>
+    <Reference Include="SimplePdfReport.Reporting.MigraDoc, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\GeneInsureWork\gendoc\louis_dll\SimplePdfReport.Reporting.MigraDoc\SimplePdfReport.Reporting.MigraDoc\bin\Debug\SimplePdfReport.Reporting.MigraDoc.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Configuration.Install" />
@@ -63,6 +70,7 @@
     <Compile Include="AttachmentModel.cs" />
     <Compile Include="CustomerLogic.cs" />
     <Compile Include="EmailService.cs" />
+    <Compile Include="GWPPartnerReport.cs" />
     <Compile Include="Library.cs" />
     <Compile Include="ProjectInstaller.cs">
       <SubType>Component</SubType>
