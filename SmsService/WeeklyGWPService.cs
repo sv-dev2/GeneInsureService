@@ -26,7 +26,8 @@ namespace Insurance.Service
             ListGrossWrittenPremiumReportModels _ListGrossWrittenPremiumReport = new ListGrossWrittenPremiumReportModels();
             _ListGrossWrittenPremiumReport.ListGrossWrittenPremiumReportdata = new List<GrossWrittenPremiumReportModels>();
 
-            var yesterdayDate = DateTime.Now.AddDays(-1);
+            //var yesterdayDate = DateTime.Now.AddDays(-1);
+            var yesterdayDate = DateTime.Now;
             int PayLater = 7;
 
             var query = " select PolicyDetail.PolicyNumber as Policy_Number, Customer.ALMId, case when Customer.ALMId is null  then  [dbo].fn_GetUserCallCenterAgent(SummaryDetail.CreatedBy) else [dbo].fn_GetUserALM(Customer.BranchId) end  as PolicyCreatedBy, Customer.FirstName + ' ' + Customer.LastName as Customer_Name,VehicleDetail.TransactionDate as Transaction_date, ";
@@ -317,8 +318,12 @@ namespace Insurance.Service
                     Debug.WriteLine("***********SendEmail**************");
 
                     string email = System.Configuration.ConfigurationManager.AppSettings["gwpemail"];
+                    string ccmail = System.Configuration.ConfigurationManager.AppSettings["gwpccmail"];
+
+                    //gwpccmail
                     Insurance.Service.EmailService objEmailService = new Insurance.Service.EmailService();
-                    objEmailService.SendAttachedEmail(email, "", "", "Zinara Report - " + DateTime.Now.ToShortDateString(), mailBody.ToString(), attachmentModels);
+                    objEmailService.SendAttachedEmail(email, ccmail, "", "Zinara Report - " + DateTime.Now.ToShortDateString(), mailBody.ToString(), attachmentModels);
+
 
                     Library.WriteErrorLog("Zinara Report - " + DateTime.Now.ToShortDateString());
                 }
@@ -333,7 +338,7 @@ namespace Insurance.Service
             finally
             {
 
-            }
+            } 
         }
 
         public static Stream GenerateStreamFromString(string s)
@@ -381,9 +386,6 @@ namespace Insurance.Service
             ////DateTime lastDate = new DateTime(year, month,
             ////                        DateTime.DaysInMonth(year, month));
             //string fourthWeekEnd = DateTime.Now.ToString("MM/dd/yyyy");
-
-
-
 
             List<GrossWrittenPremiumReportModels> ListGrossWrittenPremiumReport = new List<GrossWrittenPremiumReportModels>();
             ListGrossWrittenPremiumReportModels _ListGrossWrittenPremiumReport = new ListGrossWrittenPremiumReportModels();
@@ -700,6 +702,8 @@ namespace Insurance.Service
             return table;
         }
 
+
+       
 
 
 

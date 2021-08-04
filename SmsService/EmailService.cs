@@ -20,14 +20,18 @@ namespace Insurance.Service
         {
             try
             {
-                Debug.WriteLine("*********Portnumber*************");
+                SmsService.Library.WriteErrorLog("SendAttachedEmail start ");
+
+               // Debug.WriteLine("*********Portnumber*************");
                 var portNumber = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["SendEmailPortNo"]);
                 var enableSSL = Convert.ToBoolean(System.Configuration.ConfigurationManager.AppSettings["SendEmailEnableSSL"]);
                 var smtpAddress = Convert.ToString(ConfigurationManager.AppSettings["SendEmailSMTP"]);
 
-                Debug.WriteLine("*************from*********");
+               // Debug.WriteLine("*************from*********");
                 var FromMailAddress = System.Configuration.ConfigurationManager.AppSettings["SendEmailFrom"].ToString();
                 var password = System.Configuration.ConfigurationManager.AppSettings["SendEmailFromPassword"].ToString();
+
+                SmsService.Library.WriteErrorLog("from email: " +FromMailAddress);
 
                 //SmtpClient _client = new SmtpClient(ConfigurationManager.AppSettings["SMTPServer"]);
                 var client = new SmtpClient(smtpAddress, portNumber) //Port 8025, 587 and 25 can also be used.
@@ -38,6 +42,11 @@ namespace Insurance.Service
                 client.UseDefaultCredentials = false;
                 MailMessage _mailMessage = new MailMessage();
                 _mailMessage.To.Add(new MailAddress(pTo));
+
+                if(pCc!="")
+                    _mailMessage.CC.Add(new MailAddress(pCc));
+
+
                 _mailMessage.From = new MailAddress(FromMailAddress, "GeneInsure");
                 _mailMessage.Subject = pSubject;
                 _mailMessage.IsBodyHtml = true;
@@ -74,21 +83,20 @@ namespace Insurance.Service
                 _mailMessage.AlternateViews.Add(htmlView);
                 using (SmtpClient smtp = new SmtpClient(smtpAddress, portNumber))
                 {
-                    Debug.WriteLine("*************smtp*********");
-
-                    smtp.Credentials = new NetworkCredential(FromMailAddress, password);
+                    //Debug.WriteLine("*************smtp*********");
+                    smtp.UseDefaultCredentials = false;
                     smtp.EnableSsl = enableSSL;
+                    smtp.Credentials = new NetworkCredential(FromMailAddress, password);
+                    
+                    
+                    //smtp.Timeout = 2000;
                     try
                     {
-                        smtp.Send(_mailMessage);
-                        Debug.WriteLine("*********************");
-                        Debug.WriteLine("**************Email Sent*************");
+                        smtp.Send(_mailMessage);        
                     }
                     catch (Exception ex)
                     {
-                        Debug.WriteLine("*********************");
-                        //WriteLog(ex.ToString());
-                        Debug.WriteLine("*********************");
+                        SmsService.Library.WriteErrorLog("mail exc " + ex.Message);
 
                     }
                 }
@@ -114,6 +122,8 @@ namespace Insurance.Service
             catch (Exception ex)
             {
                 //WriteLog(ex.Message);
+
+                SmsService.Library.WriteErrorLog("SendAttachedEmail: " + ex.Message);
             }
         }
 

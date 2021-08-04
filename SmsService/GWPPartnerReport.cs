@@ -1,4 +1,4 @@
-﻿using InsuranceClaim.Models;
+﻿
 using SimplePdfReport.Reporting;
 using SimplePdfReport.Reporting.MigraDoc;
 using System;
@@ -15,8 +15,9 @@ namespace SmsService
 {
     class GWPPartnerReport
     {
-
         string connectionString = System.Configuration.ConfigurationManager.AppSettings["Insurance"].ToString();
+
+       // private readonly Logger logger = LogManager.GetCurrentClassLogger();
 
 
         public void InitReports()
@@ -73,16 +74,12 @@ namespace SmsService
 
             //  string partnerData = "select PolicyDetail.PolicyNumber as PolicyNumber, PartnerCommissions.CommissionPercentage ,Branch.BranchName as BranchName,  convert(varchar, PolicyDetail.CreatedOn, 106) as CreatedOn , PaymentInformation.PaymentId, VehicleDetail.Premium,cast(VehicleDetail.Premium * PartnerCommissions.CommissionPercentage as decimal(10, 2)) as Comission_Amount, Customer.ALMId from PolicyDetail join Customer on Customer.Id = PolicyDetail.CustomerId join VehicleDetail on VehicleDetail.PolicyId = PolicyDetail.Id join PaymentInformation on PaymentInformation.PolicyId = PolicyDetail.Id join Branch on VehicleDetail.ALMBranchId = Branch.Id join Partners on Partners.Id = Branch.PartnerId join PartnerCommissions on CommissionEffectiveDate <= PolicyDetail.CreatedOn and PartnerCommissions.PartnerId = branch.PartnerId where PolicyDetail.CreatedOn BETWEEN '" + startDate + "' AND '" + endDate + "' and branch.PartnerId=" + model.Id;
 
-            string partnerData = "select PolicyDetail.PolicyNumber as PolicyNumber, Branch.BranchName as BranchName, ";
-            partnerData += " convert(varchar, PolicyDetail.CreatedOn, 106) as CreatedOn, PaymentInformation.PaymentId, VehicleDetail.Premium, ";
-            partnerData += " cast(VehicleDetail.Premium * ( select top 1  CommissionPercentage  from PartnerCommissions as b  where PartnerId=" + model.Id + " and b.CommissionEffectiveDate<= PolicyDetail.CreatedOn ";
-            partnerData += " or b.CommissionEffectiveDate < (select top 1 CommissionEffectiveDate from PartnerCommissions where b.Id = b.Id+1  )) as decimal(10, 2)) as Comission_Amount,  ";
-            partnerData += " Customer.ALMId  from PolicyDetail  join Customer on Customer.Id = PolicyDetail.CustomerId join VehicleDetail on VehicleDetail.PolicyId = PolicyDetail.Id  ";
-            partnerData += " join PaymentInformation on PaymentInformation.PolicyId = PolicyDetail.Id  join Branch on VehicleDetail.ALMBranchId = Branch.Id  ";
-            partnerData += " join Partners on Partners.Id = Branch.PartnerId where convert(varchar,PolicyDetail.CreatedOn,110)=convert(varchar,'" + yesterDayDate + "',110) and branch.PartnerId=" + model.Id;
+            string partnerData = "select PolicyDetail.PolicyNumber, Branch.BranchName, convert(varchar, PolicyDetail.CreatedOn, 106) as CreatedOn, SummaryDetail.PaymentMethodId, SummaryDetail.TotalPremium,  CAST(ROUND(CommissionPercentage*SummaryDetail.TotalPremium, 2) AS decimal(10,2))  as Comission_Amount   from PolicyDetail join VehicleDetail on PolicyDetail.Id=VehicleDetail.PolicyId  join SummaryVehicleDetail on VehicleDetail.Id=SummaryVehicleDetail.VehicleDetailsId  join SummaryDetail on SummaryVehicleDetail.SummaryDetailId=SummaryDetail.Id join Branch on VehicleDetail.ALMBranchId= Branch.Id  join Partners on Branch.PartnerId=Partners.Id join PartnerCommissions on Partners.Id = PartnerCommissions.PartnerId  where convert(varchar,PolicyDetail.CreatedOn,110)=convert(varchar,'" + yesterDayDate + "',110) and branch.PartnerId=" + model.Id;
 
             // convert(varchar(5),PolicyDetail.CreatedOn,110)=convert(varchar(5),getdate(),110)
-            Library.WriteErrorLog("Query: " + partnerData);
+            //Library.WriteErrorLog("Query: " + partnerData);
+            //partnerData = "select  top 10 PolicyDetail.PolicyNumber as PolicyNumber, Branch.BranchName as BranchName,  convert(varchar, PolicyDetail.CreatedOn, 106) as CreatedOn, PaymentInformation.PaymentId, VehicleDetail.Premium,  cast(VehicleDetail.Premium * ( select top 1  CommissionPercentage  from PartnerCommissions as b  where PartnerId=1 and b.CommissionEffectiveDate<= PolicyDetail.CreatedOn  or b.CommissionEffectiveDate < (select top 1 CommissionEffectiveDate from PartnerCommissions where b.Id = b.Id+1  )) as decimal(10, 2)) as Comission_Amount,   Customer.ALMId  from PolicyDetail  join Customer on Customer.Id = PolicyDetail.CustomerId join VehicleDetail on VehicleDetail.PolicyId = PolicyDetail.Id   join PaymentInformation on PaymentInformation.PolicyId = PolicyDetail.Id  join Branch on VehicleDetail.ALMBranchId = Branch.Id   join Partners on Partners.Id = Branch.PartnerId where branch.PartnerId = 3";
+            //logger.Debug("Query" + partnerData);
 
             using (SqlConnection con = new SqlConnection(connectionString))
             {
@@ -94,17 +91,18 @@ namespace SmsService
 
                 using (SqlDataReader reader = com.ExecuteReader())
                 {
-
-                    if (reader.Read())
+                    while (reader.Read())
                     {
-
                         ALMParnterSearchModelsData data = new ALMParnterSearchModelsData();
                         data.BranchName = reader["BranchName"] == null ? "" : Convert.ToString(reader["BranchName"]);
                         data.PolicyNumber = reader["PolicyNumber"] == null ? "" : Convert.ToString(reader["PolicyNumber"]);
+                        data.CommissionAmount = Convert.ToDecimal(reader["Comission_Amount"]);
+                        data.GrossPremium = Convert.ToDecimal(reader["TotalPremium"]);
+                        data.PolicyDate = reader["CreatedOn"] == null ? "" : Convert.ToString(reader["CreatedOn"]);
 
                         listData.Add(data);
-
                     }
+
                 }
             }
 
@@ -126,6 +124,8 @@ namespace SmsService
             var smtpAddress = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["SendEmailSMTP"]);
 
 
+
+
             MailMessage mail = new MailMessage();
 
             mail.From = new MailAddress(FromMailAddress);
@@ -135,7 +135,7 @@ namespace SmsService
 
             System.Net.Mail.Attachment attachment;
             attachment = new System.Net.Mail.Attachment(path);
-            attachment.Name = "ALM Partner Daily Report";
+            attachment.Name = "ALM Partner Daily Report.pdf";
             mail.Attachments.Add(attachment);
             var smtp = new System.Net.Mail.SmtpClient();
             {
@@ -151,6 +151,8 @@ namespace SmsService
 
         private ReportData CreateReportData(PartnerModel model, StructureSet structureSet)
         {
+
+
             return new ReportData
             {
                 Patient = model,

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -98,7 +99,7 @@ namespace SmsService
         public string Customer_Name { get; set; }
         public decimal Premium_due { get; set; }
         public int PolicyId { get; set; }
-        public double Days { get; set; }
+        public string Days { get; set; }
     }
 
     public class RecieptDetail
@@ -109,7 +110,20 @@ namespace SmsService
         public string Transaction_date { get; set; }
         public string Customer_Name { get; set; }
         public decimal Premium_due { get; set; }
-        public double Days { get; set; }
+       // public double Days { get; set; }
+
+        [DisplayName("0-7")]
+        public string Days7 { get; set; }
+
+        [DisplayName("7-14")]
+        public string Days14 { get; set; }
+
+        [DisplayName("15-21")]
+        public string Days21 { get; set; }
+
+        [DisplayName("22-more")]
+        public string Days22 { get; set; }
+
     }
 
 

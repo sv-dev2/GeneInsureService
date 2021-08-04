@@ -28,31 +28,37 @@ namespace SmsService
 
             Library.WriteErrorLog("Reminder Email ");
             timer1 = new Timer();
-            this.timer1.Interval = 150000; //every 2:30 min
-            //  this.timer1.Interval = 150000; //every 30 secs //3600000 :one hour
-           //  this.timer1.Interval = 3600000; //every 1 hour
-            // this.timer1.Interval = 86400000; // 24 Hours
-            // this.timer1.Interval = 180000;
+            //this.timer1.Interval = 200000; //every 2 min min
+                                             //  this.timer1.Interval = 150000; //every 30 secs //3600000 :one hour
+            this.timer1.Interval = 3600000; //every 1 hour
+                                           // this.timer1.Interval = 86400000; // 24 Hours
+                                           // this.timer1.Interval = 180000;
             this.timer1.Elapsed += new System.Timers.ElapsedEventHandler(this.timer1_Tick);
             timer1.Enabled = true;
             //Library.WriteErrorLog("window service started");
-       
+
         }
 
         private void timer1_Tick(object sender, ElapsedEventArgs e)
         {
             //Write code here to do some job depends on your requirement
 
-            var resHour = DateTime.Now.ToShortTimeString().Split(':');
-            var resAmPm = DateTime.Now.ToShortTimeString().Split(' ');
+            TimeZoneInfo Zimwabe_Standard_Time = TimeZoneInfo.FindSystemTimeZoneById("South Africa Standard Time");
+            DateTime dateTime_Zimwabe = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, Zimwabe_Standard_Time);
+
+            var resHour = dateTime_Zimwabe.ToShortTimeString().Split(':');
+            var resAmPm = dateTime_Zimwabe.ToShortTimeString().Split(' ');
+
+            //var resHour = DateTime.Now.ToShortTimeString().Split(':');
+            //var resAmPm = DateTime.Now.ToShortTimeString().Split(' ');
 
             string time = (resHour[0] + resAmPm[1]).ToString().ToLower();
 
-            if (time == "12am")
-            {
-                GetCustomerDate();
-                ReminderEmailSms();
+            Library.WriteErrorLog("Zimbabwe time: " + time);
 
+            if (time == "11pm")
+            {
+                Library.WriteErrorLog("Zimbabwe time2: " + time);
                 SendZinaraDailyReport();
                 SendFWPSummaryReport();
 
@@ -61,15 +67,15 @@ namespace SmsService
 
                 GetRecieptReport();
 
-                //  SendGWPExcelFile();
+                GetCustomerDate();
+                ReminderEmailSms();
                 Library.WriteErrorLog("Timer ticked and some job has been done successfully");
             }
 
-            //GWPPartnerReport gWPPartnerReport = new GWPPartnerReport();
-            //gWPPartnerReport.InitReports();
 
-
-            //  SendFWPSummaryReport();
+            // GetRecieptReport();
+            //  SendZinaraDailyReport();
+            // SendFWPSummaryReport();
 
         }
 
@@ -652,16 +658,8 @@ namespace SmsService
                 Library.WriteErrorLog(" ReadBirthdayMessage  :" + ex.Message);
             }
 
-
             return message;
         }
-
-
-
-
-
-
-
 
 
         #region
@@ -669,7 +667,7 @@ namespace SmsService
         {
             DataTable dataTable = GetGWPData();
             string destFilePath = "";
-           // destFilePath = @"C:\inetpub\GeneWebsite_latest\CsvFile\GwpReport.csv";
+            // destFilePath = @"C:\inetpub\GeneWebsite_latest\CsvFile\GwpReport.csv";
 
 
             string uniqueId = Guid.NewGuid().ToString();
@@ -725,21 +723,21 @@ namespace SmsService
 
                 // string path = urlPath + @"CsvFile/GwpReport.csv";
 
-                string path = urlPath + @"/CsvFile/" + uniqueId +"/GwpReport.csv";
+                string path = urlPath + @"/CsvFile/" + uniqueId + "/GwpReport.csv";
 
                 _attachements.Add(path);
 
-              //  string body = "Please check attached =" + DateTime.Now.ToShortDateString() + " GWP Report";
+                //  string body = "Please check attached =" + DateTime.Now.ToShortDateString() + " GWP Report";
 
 
                 StringBuilder mailBody = new StringBuilder();
                 mailBody.AppendFormat("<h1>Please click below link to get gwp report.</h1>");
-                mailBody.AppendFormat("<p><a href='"+ path+"'>GWPReport</a></p>");
+                mailBody.AppendFormat("<p><a href='" + path + "'>GWPReport</a></p>");
 
-                string ccList = "charles@gene.co.zw, emmanuel@gene.co.zw, masimba@gene.co.zw, blessing@gene.co.zw"; 
+                string ccList = "charles@gene.co.zw, emmanuel@gene.co.zw, masimba@gene.co.zw, blessing@gene.co.zw";
 
                 objsmsemail.SendEmail("it@gene.co.zw", ccList, "", "GWPReport_" + DateTime.Now.ToShortDateString(), mailBody.ToString(), _attachements);
-            
+
                 //it@gene.co.zw
 
 
@@ -769,7 +767,7 @@ namespace SmsService
 
             var yesterdayDate = DateTime.Now.AddDays(-1);
 
-         //   var yesterdayDate = DateTime.Now.AddMonths(-2);
+            //   var yesterdayDate = DateTime.Now.AddMonths(-2);
 
             var query = " select PolicyDetail.PolicyNumber as Policy_Number, Customer.ALMId, case when Customer.ALMId is null  then  [dbo].fn_GetUserCallCenterAgent(SummaryDetail.CreatedBy) else [dbo].fn_GetUserALM(Customer.BranchId) end  as PolicyCreatedBy, Customer.FirstName + ' ' + Customer.LastName as Customer_Name,VehicleDetail.TransactionDate as Transaction_date, ";
             query += "  case when Customer.id=SummaryDetail.CreatedBy then [dbo].fn_GetUserBranch(Customer.id) else [dbo].fn_GetUserBranch(SummaryDetail.CreatedBy) end as BranchName, ";
@@ -783,14 +781,14 @@ namespace SmsService
             query += " join VehicleDetail on PolicyDetail.Id = VehicleDetail.PolicyId ";
             query += "join SummaryVehicleDetail on VehicleDetail.id = SummaryVehicleDetail.VehicleDetailsId ";
             query += " join SummaryDetail on SummaryDetail.id = SummaryVehicleDetail.SummaryDetailId ";
-           // query += "  join PaymentInformation on SummaryDetail.Id=PaymentInformation.SummaryDetailId ";
+            // query += "  join PaymentInformation on SummaryDetail.Id=PaymentInformation.SummaryDetailId ";
             query += " join PaymentMethod on SummaryDetail.PaymentMethodId = PaymentMethod.Id ";
             query += "join PaymentTerm on VehicleDetail.PaymentTermId = PaymentTerm.Id ";
             query += " left join CoverType on VehicleDetail.CoverTypeId = CoverType.Id ";
             query += " left join Currency on VehicleDetail.CurrencyId = Currency.Id ";
             query += " left join BusinessSource on BusinessSource.Id = VehicleDetail.BusinessSourceDetailId ";
             query += " left   join SourceDetail on VehicleDetail.BusinessSourceDetailId = SourceDetail.Id join AspNetUsers on AspNetUsers.id=customer.UserID join AspNetUserRoles on AspNetUserRoles.UserId=AspNetUsers.Id ";
-            query += " where (VehicleDetail.IsActive = 1 or VehicleDetail.IsActive = null) and SummaryDetail.isQuotation=0 and SummaryDetail.PaymentMethodId <>"+PayLater+" and  CONVERT(date, VehicleDetail.TransactionDate) = convert(date, '" + yesterdayDate.ToShortDateString() + "', 101)  order by  VehicleDetail.Id desc ";
+            query += " where (VehicleDetail.IsActive = 1 or VehicleDetail.IsActive = null) and SummaryDetail.isQuotation=0 and SummaryDetail.PaymentMethodId <>" + PayLater + " and  CONVERT(date, VehicleDetail.TransactionDate) = convert(date, '" + yesterdayDate.ToShortDateString() + "', 101)  order by  VehicleDetail.Id desc ";
 
             SqlConnection connection = new SqlConnection(connectionString);
             connection.Open();
@@ -841,13 +839,17 @@ namespace SmsService
         public void GetRecieptReport()
         {
 
-            string startDate = DateTime.Now.AddMonths(-2).ToShortDateString();
+            string startDate = DateTime.Now.AddMonths(-4).ToShortDateString();
             string endDate = DateTime.Now.ToShortDateString();
 
-            var query = " select [dbo].[fn_GetUserCallCenterAgent] (SummaryDetail.CreatedBy) as AgentName, PolicyDetail.id as PolicyId,  PolicyDetail.PolicyNumber, VehicleDetail.RegistrationNo,VehicleDetail.TransactionDate, Customer.FirstName + ' ' + Customer.LastName as CustomerName, SummaryDetail.TotalPremium  from PolicyDetail join VehicleDetail on PolicyDetail.Id = VehicleDetail.PolicyId ";
-            query += " join SummaryVehicleDetail on VehicleDetail.Id = SummaryVehicleDetail.Id ";
+            Library.WriteErrorLog(" GetRecieptReport :");
+
+            var query = " select [dbo].[fn_GetUserCallCenterAgent] (SummaryDetail.CreatedBy) as AgentName,  PolicyDetail.id as PolicyId,  PolicyDetail.PolicyNumber, VehicleDetail.RegistrationNo,VehicleDetail.TransactionDate, SummaryDetail.CreatedOn, Customer.FirstName + ' ' + Customer.LastName as CustomerName, SummaryDetail.TotalPremium  from PolicyDetail join VehicleDetail on PolicyDetail.Id = VehicleDetail.PolicyId ";
+            query += " join SummaryVehicleDetail on VehicleDetail.Id = SummaryVehicleDetail.VehicleDetailsId ";
             query += " join SummaryDetail on SummaryDetail.Id = SummaryVehicleDetail.SummaryDetailId join Customer on VehicleDetail.CustomerId=Customer.Id ";
-            query += " where(VehicleDetail.IsActive = 1 or VehicleDetail.IsActive = null) and SummaryDetail.isQuotation = 0  and(CONVERT(date, VehicleDetail.TransactionDate) >= convert(date, '" + startDate + "', 101)  and CONVERT(date, VehicleDetail.TransactionDate) <= convert(date, '" + endDate + "', 101))";
+            query += " where(VehicleDetail.IsActive = 1 or VehicleDetail.IsActive = null) and SummaryDetail.isQuotation = 0 and [dbo].[fn_GetUserBranch] (SummaryDetail.CreatedBy) ='Gene Call Centre' and(CONVERT(date, VehicleDetail.TransactionDate) >= convert(date, '" + startDate + "', 101)  and CONVERT(date, VehicleDetail.TransactionDate) <= convert(date, '" + endDate + "', 101)) order by VehicleDetail.TransactionDate  desc ";
+
+            Library.WriteErrorLog("GetRecieptReport Query :" + query);
 
             string connectionString = System.Configuration.ConfigurationManager.AppSettings["Insurance"].ToString();
 
@@ -867,7 +869,7 @@ namespace SmsService
                         model.AgentName = reader["AgentName"] == null ? "" : Convert.ToString(reader["AgentName"]);
                         model.Policy_Number = reader["PolicyNumber"] == null ? "" : Convert.ToString(reader["PolicyNumber"]);
                         model.VRN = reader["RegistrationNo"] == null ? "" : Convert.ToString(reader["RegistrationNo"]);
-                        model.Transaction_date = reader["TransactionDate"] == null ? "" : Convert.ToString(reader["TransactionDate"]);
+                        model.Transaction_date = reader["CreatedOn"] == null ? "" : Convert.ToString(reader["CreatedOn"]);
                         model.Customer_Name = reader["CustomerName"] == null ? "" : Convert.ToString(reader["CustomerName"]);
                         model.Premium_due = reader["TotalPremium"] == null ? 0 : Convert.ToDecimal(reader["TotalPremium"]);
                         model.PolicyId = reader["PolicyId"] == null ? 0 : Convert.ToInt32(reader["PolicyId"]);
@@ -883,9 +885,10 @@ namespace SmsService
 
 
             var query2 = "select * from ReceiptModuleHistory where (CONVERT(date, ReceiptModuleHistory.CreatedOn) >= convert(date, '" + startDate + "', 101) ";
-            query2 += " and CONVERT(date, ReceiptModuleHistory.CreatedOn) <= convert(date, '" + endDate + "', 101)) ";
+            query2 += " and CONVERT(date, ReceiptModuleHistory.CreatedOn) <= convert(date, '" + endDate + "', 101)) and (ReceiptModuleHistory.IsActive is null or ReceiptModuleHistory.IsActive=1) order by ReceiptModuleHistory.CreatedOn desc";
 
 
+            Library.WriteErrorLog(" GetRecieptReport start query 2");
 
             var recieptList = new List<RecieptModel>();
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -909,40 +912,55 @@ namespace SmsService
             }
 
 
-
-
             List<RecieptDetail> list = new List<RecieptDetail>();
-
             DateTime dtCurrent = Convert.ToDateTime(DateTime.Now.ToShortDateString());
 
             foreach (var item in result)
             {
                 DateTime policyCreatedDate = Convert.ToDateTime(item.Transaction_date);
                 TimeSpan t = dtCurrent.Subtract(policyCreatedDate);
-                if (t.TotalDays == 7 || t.TotalDays == 14 || t.TotalDays == 21 || t.TotalDays == 30)
+                //if (t.TotalDays == 7 || t.TotalDays == 14 || t.TotalDays == 21 || t.TotalDays == 30)
+                //{
+                var receiptDetail = recieptList.FirstOrDefault(c => c.PolicyId == item.PolicyId);
+                if (receiptDetail == null)
                 {
-                    var receiptDetail = recieptList.FirstOrDefault(c => c.PolicyId == item.PolicyId);
-                    if (receiptDetail == null)
-                    {
-                        item.Days = t.TotalDays;
+                    item.Days = Convert.ToInt32(t.TotalDays).ToString();
 
-                        RecieptDetail detail = new RecieptDetail
-                        {
-                            AgentName = item.AgentName,
-                            Policy_Number = item.Policy_Number,
-                            Customer_Name = item.Customer_Name,
-                            Premium_due = item.Premium_due,
-                            Days = item.Days,
-                            VRN = item.VRN,
-                            Transaction_date = item.Transaction_date
-                        };
+                    //RecieptDetail detail = new RecieptDetail
+                    //{
+                    //    AgentName = item.AgentName,
+                    //    Policy_Number = item.Policy_Number,
+                    //    Customer_Name = item.Customer_Name,
+                    //    Premium_due = item.Premium_due,
+                    //    VRN = item.VRN,
+                    //    Transaction_date = item.Transaction_date
+                    //};
 
 
-                        list.Add(detail);
-                    }
+                    RecieptDetail detail = new RecieptDetail();
+                    detail.AgentName = item.AgentName;
+                    detail.Policy_Number = item.Policy_Number;
+                    detail.Customer_Name = item.Customer_Name;
+                    detail.Premium_due = item.Premium_due;
+                    detail.VRN = item.VRN;
+                    detail.Transaction_date = item.Transaction_date;
+
+                    if (t.TotalDays < 8)
+                        detail.Days7 = Convert.ToInt32(item.Days).ToString();
+                    else if (t.TotalDays < 15)
+                        detail.Days14 = Convert.ToInt32(item.Days).ToString();
+                    else if (t.TotalDays < 22)
+                        detail.Days21 = Convert.ToInt32(item.Days).ToString();
+                    else
+                        detail.Days22 = Convert.ToInt32(item.Days).ToString();
+
+                    list.Add(detail);
                 }
+
             }
 
+
+            Library.WriteErrorLog("GetRecieptReport Count: " + list.Count());
 
             MemoryStream outputStream = new MemoryStream();
             using (ExcelPackage package = new ExcelPackage(outputStream))
@@ -980,12 +998,13 @@ namespace SmsService
 
                 string email = System.Configuration.ConfigurationManager.AppSettings["gwpemail"];
 
-                //email = "kindlebit.net@gmail.com";
+                 //email = "kindlebit.net@gmail.com";
+
 
                 Insurance.Service.EmailService objEmailService = new Insurance.Service.EmailService();
                 objEmailService.SendAttachedEmail(email, "", "", "Unreceipt Report - " + DateTime.Now.ToLongDateString(), mailBody.ToString(), attachmentModels);
 
-
+                Library.WriteErrorLog(" GetRecieptReport mail sent");
             }
         }
 
