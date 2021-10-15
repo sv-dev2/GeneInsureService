@@ -28,7 +28,7 @@ namespace SmsService
 
             Library.WriteErrorLog("Reminder Email ");
             timer1 = new Timer();
-            //this.timer1.Interval = 200000; //every 2 min min
+           // this.timer1.Interval = 500000; //every 5 min min
                                              //  this.timer1.Interval = 150000; //every 30 secs //3600000 :one hour
             this.timer1.Interval = 3600000; //every 1 hour
                                            // this.timer1.Interval = 86400000; // 24 Hours
@@ -73,9 +73,11 @@ namespace SmsService
             }
 
 
-            // GetRecieptReport();
-            //  SendZinaraDailyReport();
-            // SendFWPSummaryReport();
+            //GetRecieptReport();
+            // SendZinaraDailyReport();
+            //SendFWPSummaryReport();
+            //GWPPartnerReport gWPPartnerReport = new GWPPartnerReport();
+            //gWPPartnerReport.InitReports();
 
         }
 
@@ -210,7 +212,6 @@ namespace SmsService
 
                 foreach (DataRow dr in queryString.Rows)
                 {
-
                     //VehicleDetail model = new VehicleDetail();
                     List<VehicleDetail> vehicalList = new List<VehicleDetail>();
                     Library.WriteErrorLog("Read the Email records and number of records=" + dr.RowState);
