@@ -72,6 +72,7 @@ namespace SmsService
         public string SourceDetailName { get; set; }
 
         public int SummaryDetailId { get; set; }
+        public int ALMBranchId { get; set; }
 
 
     }

@@ -26,8 +26,8 @@ namespace Insurance.Service
             ListGrossWrittenPremiumReportModels _ListGrossWrittenPremiumReport = new ListGrossWrittenPremiumReportModels();
             _ListGrossWrittenPremiumReport.ListGrossWrittenPremiumReportdata = new List<GrossWrittenPremiumReportModels>();
 
-            //var yesterdayDate = DateTime.Now.AddDays(-1);
-            var yesterdayDate = DateTime.Now;
+             var yesterdayDate = DateTime.Now;
+            
             int PayLater = 7;
 
             var query = " select PolicyDetail.PolicyNumber as Policy_Number, Customer.ALMId, case when Customer.ALMId is null  then  [dbo].fn_GetUserCallCenterAgent(SummaryDetail.CreatedBy) else [dbo].fn_GetUserALM(Customer.BranchId) end  as PolicyCreatedBy, Customer.FirstName + ' ' + Customer.LastName as Customer_Name,VehicleDetail.TransactionDate as Transaction_date, ";
@@ -54,6 +54,7 @@ namespace Insurance.Service
             Debug.WriteLine(yesterdayDate.ToString("MM/dd/yyyy"));
             Debug.WriteLine("***********************");
 
+            Library.WriteErrorLog("summary report:= "+ query);
 
             DataTable table = new DataTable();
             string connectionString = System.Configuration.ConfigurationManager.AppSettings["Insurance"].ToString();
@@ -70,7 +71,6 @@ namespace Insurance.Service
 
             try
             {
-
 
                 DataTable dt = GetListOfBranch();
                 List<BranchModel> obj = ConvertDataTable<BranchModel>(dt);
@@ -102,7 +102,8 @@ namespace Insurance.Service
         public DataTable GetListOfBranch()
         {
 
-            var branchQuery = "select * from Branch where id != 6";
+            //  var branchQuery = "select * from Branch where id != 6";
+            var branchQuery = "select * from Branch where [Status]=1 and Id<>6";
             DataTable table = new DataTable();
             string connectionString = System.Configuration.ConfigurationManager.AppSettings["Insurance"].ToString();
 
@@ -320,6 +321,7 @@ namespace Insurance.Service
                     string email = System.Configuration.ConfigurationManager.AppSettings["gwpemail"];
                     string ccmail = System.Configuration.ConfigurationManager.AppSettings["gwpccmail"];
 
+                   // email = "kindlebit.net@gmail.com";
                     //gwpccmail
                     Insurance.Service.EmailService objEmailService = new Insurance.Service.EmailService();
                     objEmailService.SendAttachedEmail(email, ccmail, "", "Zinara Report - " + DateTime.Now.ToShortDateString(), mailBody.ToString(), attachmentModels);
@@ -481,6 +483,9 @@ namespace Insurance.Service
 
         }
 
+
+       
+
         public static void GenerateExcel2(List<WeeklyGWPModel> grossWrittenPremiumReports)
         {
             try
@@ -568,7 +573,7 @@ namespace Insurance.Service
 
                     string email = System.Configuration.ConfigurationManager.AppSettings["gwpemail"];
 
-                   // email = "kindlebit.net@gmail.com";
+                    //email = "kindlebit.net@gmail.com";
 
                     Insurance.Service.EmailService objEmailService = new Insurance.Service.EmailService();
                     objEmailService.SendAttachedEmail(email, "", "", "Summary GWP Report - " + DateTime.Now.ToLongDateString(), mailBody.ToString(), attachmentModels);
@@ -608,7 +613,7 @@ namespace Insurance.Service
                 query += " cast(VehicleDetail.Premium * 30 / 100 as decimal(10, 2))    as Comission_Amount, VehicleDetail.IncludeRadioLicenseCost, ";
                 query += " CASE WHEN IncludeRadioLicenseCost = 1 THEN VehicleDetail.RadioLicenseCost else 0 end as RadioLicenseCost, VehicleDetail.VehicleLicenceFee as Zinara_License_Fee, ";
                 query += " VehicleDetail.RenewalDate as PolicyRenewalDate, VehicleDetail.IsActive, VehicleDetail.RenewPolicyNumber as RenewPolicyNumber, ";
-                query += " VehicleDetail.BusinessSourceDetailId, SummaryDetail.id as SummaryDetailId, BusinessSource.Source as BusinessSourceName, SourceDetail.FirstName + ' ' + SourceDetail.LastName as SourceDetailName from PolicyDetail ";
+                query += " VehicleDetail.BusinessSourceDetailId, VehicleDetail.ALMBranchId, SummaryDetail.id as SummaryDetailId, BusinessSource.Source as BusinessSourceName, SourceDetail.FirstName + ' ' + SourceDetail.LastName as SourceDetailName from PolicyDetail ";
                 query += " join Customer on PolicyDetail.CustomerId = Customer.Id ";
                 query += " join VehicleDetail on PolicyDetail.Id = VehicleDetail.PolicyId ";
                 query += "join SummaryVehicleDetail on VehicleDetail.id = SummaryVehicleDetail.VehicleDetailsId ";
@@ -688,7 +693,7 @@ namespace Insurance.Service
         public DataTable GetAllBranch()
         {
 
-            var branchQuery = "select * from Branch";
+            var branchQuery = "select * from Branch  where status =1";
             DataTable table = new DataTable();
             string connectionString = System.Configuration.ConfigurationManager.AppSettings["Insurance"].ToString();
 

@@ -61,12 +61,9 @@ namespace SmsService
                 Library.WriteErrorLog("Zimbabwe time2: " + time);
                 SendZinaraDailyReport();
                 SendFWPSummaryReport();
-
+                GetRecieptReport();
                 GWPPartnerReport gWPPartnerReport = new GWPPartnerReport();
                 gWPPartnerReport.InitReports();
-
-                GetRecieptReport();
-
                 GetCustomerDate();
                 ReminderEmailSms();
                 Library.WriteErrorLog("Timer ticked and some job has been done successfully");
@@ -74,8 +71,8 @@ namespace SmsService
 
 
             //GetRecieptReport();
-            // SendZinaraDailyReport();
-            //SendFWPSummaryReport();
+            //  SendZinaraDailyReport();
+            // SendFWPSummaryReport();
             //GWPPartnerReport gWPPartnerReport = new GWPPartnerReport();
             //gWPPartnerReport.InitReports();
 
